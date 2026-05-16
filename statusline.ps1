@@ -15,6 +15,17 @@ $model = $ctx.model.display_name
 $cwd   = $ctx.workspace.current_dir
 $dir   = if ($cwd) { Split-Path $cwd -Leaf } else { "~" }
 
+# Session cost (USD) — present on recent Claude Code versions
+$costStr = ""
+if ($ctx.cost -and ($null -ne $ctx.cost.total_cost_usd)) {
+    $c = [double]$ctx.cost.total_cost_usd
+    if ($c -ge 1) {
+        $costStr = " `$" + ("{0:N2}" -f $c)
+    } else {
+        $costStr = " `$" + ("{0:N3}" -f $c)
+    }
+}
+
 # Git branch (silent if not a repo)
 $branch = ""
 if ($cwd -and (Test-Path $cwd)) {
@@ -28,9 +39,12 @@ if ($cwd -and (Test-Path $cwd)) {
 
 # ANSI colors
 $esc   = [char]27
-$cyan  = "$esc[36m"
-$green = "$esc[32m"
-$gray  = "$esc[90m"
-$reset = "$esc[0m"
+$cyan   = "$esc[36m"
+$green  = "$esc[32m"
+$gray   = "$esc[90m"
+$yellow = "$esc[33m"
+$reset  = "$esc[0m"
 
-Write-Host "$cyan[$model]$reset $green$dir$reset$gray$branch$reset" -NoNewline
+$costColored = if ($costStr) { "$yellow$costStr$reset" } else { "" }
+
+Write-Host "$cyan[$model]$reset $green$dir$reset$gray$branch$reset$costColored" -NoNewline

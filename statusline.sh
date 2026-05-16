@@ -22,12 +22,20 @@ if [ -n "$cwd" ] && [ -d "$cwd" ]; then
   [ -n "$b" ] && branch=" ($b)"
 fi
 
+cost="$(printf '%s' "$input" | jq -r '.cost.total_cost_usd // empty')"
+cost_str=""
+if [ -n "$cost" ]; then
+  cost_str=" \$$(awk -v c="$cost" 'BEGIN { if (c+0 >= 1) printf "%.2f", c; else printf "%.3f", c }')"
+fi
+
 CYAN=$'\e[36m'
 GREEN=$'\e[32m'
 GRAY=$'\e[90m'
+YELLOW=$'\e[33m'
 RESET=$'\e[0m'
 
-printf "%s[%s]%s %s%s%s%s%s%s" \
+printf "%s[%s]%s %s%s%s%s%s%s%s%s%s" \
   "$CYAN" "$model" "$RESET" \
   "$GREEN" "$dir" "$RESET" \
-  "$GRAY" "$branch" "$RESET"
+  "$GRAY" "$branch" "$RESET" \
+  "$YELLOW" "$cost_str" "$RESET"
