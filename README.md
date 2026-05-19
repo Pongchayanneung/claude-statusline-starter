@@ -3,8 +3,10 @@
 Drop-in status line for [Claude Code](https://claude.com/claude-code). Shows model, working directory, git branch, **session cost ($)**, context window %, and the **official 5h / 7-day quota** (same numbers `/usage` displays).
 
 ```
-● Opus 4.7 · my-project · [██░░░░░░░░░░░░░] 14% · $3.46 · 5h [████░░░░░░░░░░░] 29% · wk [█░░░░░░░░░░░░░░] 8%
+● Opus 4.7  ~/my-project  14% $3.46  5h 29%  wk 8%
 ```
+
+Compact single-line layout (~55 chars) so it doesn't overflow when you run Claude Code in split-screen terminals.
 
 ## Pick one
 
@@ -27,9 +29,9 @@ Or let Claude wire it up for you — run `/statusline` inside Claude Code and te
 
 ## What you'll see
 
-- **Context bar** — fills as the current session approaches the model's context window (200k, or 1M for `*-1m` / Opus 4 variants). Turns amber at 50%, red at 80%.
+- **Context %** — current usage of the model's context window. Turns amber at 50%, red at 80%.
 - **Session cost** — `$X.XX` (≥$1) or `$0.XXX` (<$1), pulled straight from Claude Code's `cost.total_cost_usd` field. Resets per session.
-- **5h / weekly meters** *(Python only)* — fetched live from Anthropic's `/api/oauth/usage` endpoint (the same source `/usage` reads). Matches what the in-app `/usage` modal shows. Cached 60s; refreshed in the background so the statusline never blocks.
+- **5h / weekly meters** *(Python only)* — read directly from `data.rate_limits.{five_hour,seven_day}.used_percentage`, which Claude Code 2.1+ embeds in the JSON it pipes to the status line. Same numbers `/usage` shows, no network call, no cache.
 
 ## How it works
 
@@ -55,11 +57,10 @@ The script's **first stdout line** becomes the status line. ANSI colors work. Ti
 
 ## Customize
 
-- **Cache freshness** — `USAGE_TTL_SEC` (default 60s soft, 600s hard before showing `—%`)
-- **Network timeout** — `USAGE_TIMEOUT_SEC` (default 2.5s — keeps the blocking fetch under the 300ms statusline budget on cache hits, only matters on first run)
-- **Context bar width** — `BAR_WIDTH` constant
-- **Colors** — RGB triples near the bottom of `render()`
+- **Layout / separators** — edit the `line = …` block in `render()`. The double-space `sep` keeps the line readable without dot decorations and frees up horizontal room.
+- **Colors** — RGB triples near the top of `render()`
 - **Add lines added/removed** — read `cost.total_lines_added` / `cost.total_lines_removed`
+- **Wider cwd** — `short_cwd()` only keeps the leaf folder by default; loosen it if your terminal is wide
 
 ## Files
 
