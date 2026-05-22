@@ -10,6 +10,8 @@ import json
 import os
 import sys
 
+import water
+
 if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
@@ -103,6 +105,20 @@ def render(data):
         else f"{dim}—%{reset}"
     )
 
+    blue = "\033[38;2;125;207;255m"
+    try:
+        transcript_path = data.get("transcript_path")
+        session_ml = water.tokens_to_ml(water.session_tokens(transcript_path))
+        lifetime_ml = water.tokens_to_ml(water.lifetime_tokens())
+        eth_days = water.ethiopia_days(lifetime_ml)
+        water_seg = (
+            f"{blue}💧{water.format_water(session_ml)}{reset}"
+            f"{dim}·{reset}"
+            f"{blue}🌍{eth_days:.1f}d{reset}"
+        )
+    except Exception:
+        water_seg = ""
+
     line = (
         f"{purple}● {model_name}{reset}{sep}"
         f"{cyan}{cwd_display}{reset}{sep}"
@@ -110,6 +126,8 @@ def render(data):
         f"{pct_chip('5h ', pct_5h)}{sep}"
         f"{pct_chip('wk ', pct_wk)}"
     )
+    if water_seg:
+        line += f"{sep}{water_seg}"
     sys.stdout.write(line)
 
 
