@@ -150,4 +150,4 @@ def lifetime_tokens() -> int:
 if __name__ == "__main__":
     lt_tokens = lifetime_tokens()
     lt_ml = tokens_to_ml(lt_tokens)
-    print(f"lifetime: {lt_tokens:,} tokens = {lt_ml:.1f} mL = {ethiopia_days(lt_ml):.2f} ETH-days")
+    print(f"lifetime: {lt_tokens:,} tokens = {lt_ml:.1f} mL = {ethiopia_days(lt_ml):.2f} ETD (Ethiopia-days)")

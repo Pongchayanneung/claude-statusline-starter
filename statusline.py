@@ -114,7 +114,7 @@ def render(data):
         water_seg = (
             f"{blue}💧{water.format_water(session_ml)}{reset}"
             f"{dim}·{reset}"
-            f"{blue}🌍{eth_days:.1f}d{reset}"
+            f"{blue}🌍{eth_days:.1f}ETD{reset}"
         )
     except Exception:
         water_seg = ""
