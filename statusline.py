@@ -107,16 +107,17 @@ def render(data):
         else f"{dim}—%{reset}"
     )
 
-    blue = "\033[38;2;125;207;255m"
+    dark_fg = "\033[38;2;26;27;38m"
+    dark_dim = "\033[38;2;120;130;160m"
     try:
         transcript_path = data.get("transcript_path")
         session_ml = water.tokens_to_ml(water.session_tokens(transcript_path))
         lifetime_ml = water.tokens_to_ml(water.lifetime_tokens())
         eth_c = water.eth_child_days(lifetime_ml)
         water_seg = (
-            f"{blue}💧{water.format_water(session_ml)}{reset}"
-            f"{dim}·{reset}"
-            f"{blue}{eth_c:.1f}{bg_white}🧒🏿{bg_off}{reset}"
+            f"{bg_white}{dark_fg} 💧{water.format_water(session_ml)}"
+            f"{dark_dim}·{dark_fg}"
+            f"{eth_c:.1f}🧒🏿 {reset}"
         )
     except Exception:
         water_seg = ""
