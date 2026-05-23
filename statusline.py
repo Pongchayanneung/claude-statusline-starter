@@ -110,11 +110,11 @@ def render(data):
         transcript_path = data.get("transcript_path")
         session_ml = water.tokens_to_ml(water.session_tokens(transcript_path))
         lifetime_ml = water.tokens_to_ml(water.lifetime_tokens())
-        eth_days = water.ethiopia_days(lifetime_ml)
+        eth_c = water.eth_child_days(lifetime_ml)
         water_seg = (
             f"{blue}💧{water.format_water(session_ml)}{reset}"
             f"{dim}·{reset}"
-            f"{blue}🌍{eth_days:.1f}ETD{reset}"
+            f"{blue}{eth_c:.1f}🧒🏿{reset}"
         )
     except Exception:
         water_seg = ""

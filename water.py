@@ -20,7 +20,7 @@ from typing import Optional
 
 MICROLITERS_PER_TOKEN: float = 4.35  # Sonnet 3.7 AWS blended (arxiv 2505.09598)
 CACHE_READ_FACTOR: float = 0.1
-ETHIOPIA_DAILY_LITERS: float = 15.0  # Ethiopian gov rural planning target
+ETH_CHILD_DAILY_LITERS: float = 5.0  # WHO short-term survival floor, child
 BATHTUB_LITERS: float = 150.0
 
 CACHE_PATH: Path = Path.home() / ".claude" / "water_total.json"
@@ -42,8 +42,8 @@ def tokens_to_ml(tokens: int) -> float:
     return tokens * MICROLITERS_PER_TOKEN / 1000.0
 
 
-def ethiopia_days(ml: float) -> float:
-    return ml / (ETHIOPIA_DAILY_LITERS * 1000.0)
+def eth_child_days(ml: float) -> float:
+    return ml / (ETH_CHILD_DAILY_LITERS * 1000.0)
 
 
 def format_water(ml: float) -> str:
@@ -150,4 +150,4 @@ def lifetime_tokens() -> int:
 if __name__ == "__main__":
     lt_tokens = lifetime_tokens()
     lt_ml = tokens_to_ml(lt_tokens)
-    print(f"lifetime: {lt_tokens:,} tokens = {lt_ml:.1f} mL = {ethiopia_days(lt_ml):.2f} ETD (Ethiopia-days)")
+    print(f"lifetime: {lt_tokens:,} tokens = {lt_ml:.1f} mL = {eth_child_days(lt_ml):.2f} ETHc (Ethiopian-child-days)")
