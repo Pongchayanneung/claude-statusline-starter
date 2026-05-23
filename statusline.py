@@ -74,6 +74,8 @@ def render(data):
     dim    = "\033[38;2;86;95;137m"
     cyan   = "\033[38;2;125;207;255m"
     yellow = "\033[38;2;224;175;104m"
+    bg_white = "\033[48;2;255;255;255m"
+    bg_off   = "\033[49m"
     reset  = "\033[0m"
 
     def color_for(p):
@@ -114,7 +116,7 @@ def render(data):
         water_seg = (
             f"{blue}💧{water.format_water(session_ml)}{reset}"
             f"{dim}·{reset}"
-            f"{blue}{eth_c:.1f}🧒🏿{reset}"
+            f"{blue}{eth_c:.1f}{bg_white}🧒🏿{bg_off}{reset}"
         )
     except Exception:
         water_seg = ""
