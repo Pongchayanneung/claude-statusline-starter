@@ -8,9 +8,30 @@ terminals. Reads quota directly from `data.rate_limits` supplied by Claude Code
 import io
 import json
 import os
+import subprocess
 import sys
 
 import water
+
+
+def git_dirty_count(cwd: str):
+    """Count uncommitted changes (tracked + untracked) in cwd's repo.
+
+    Fast + fail-safe: 1s cap, returns None if not a repo or git is slow, so the
+    statusline never blocks or errors. Surfaces unsaved work at a glance.
+    """
+    if not cwd or not os.path.isdir(cwd):
+        return None
+    try:
+        out = subprocess.run(
+            ["git", "-C", cwd, "status", "--porcelain"],
+            capture_output=True, text=True, timeout=1.0,
+        )
+        if out.returncode != 0:
+            return None
+        return sum(1 for ln in out.stdout.splitlines() if ln.strip())
+    except Exception:
+        return None
 
 if hasattr(sys.stdout, "buffer"):
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
@@ -122,9 +143,15 @@ def render(data):
     except Exception:
         water_seg = ""
 
+    dirty = git_dirty_count(cwd_raw)
+    wip_seg = ""
+    if dirty:
+        wip_col = yellow if dirty < 10 else "\033[38;2;247;118;142m"
+        wip_seg = f" {wip_col}⚠{dirty}{reset}"
+
     line = (
         f"{purple}● {model_name}{reset}{sep}"
-        f"{cyan}{cwd_display}{reset}{sep}"
+        f"{cyan}{cwd_display}{reset}{wip_seg}{sep}"
         f"{ctx_seg}{cost_seg}{sep}"
         f"{pct_chip('5h ', pct_5h)}{sep}"
         f"{pct_chip('wk ', pct_wk)}"
